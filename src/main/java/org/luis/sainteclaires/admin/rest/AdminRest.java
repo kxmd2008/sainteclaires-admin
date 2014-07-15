@@ -2,7 +2,6 @@ package org.luis.sainteclaires.admin.rest;
 
 import java.util.List;
 
-import org.luis.basic.domain.GenericServiceBuilder;
 import org.luis.basic.rest.model.SimpleMessage;
 import org.luis.basic.rest.model.SimpleMessageHead;
 import org.luis.sainteclaires.base.bean.Category;
@@ -41,7 +40,6 @@ public class AdminRest {
 
 	@RequestMapping(value = "logout", method = RequestMethod.POST)
 	public String logout(String loginName) {
-
 		return "admin/login";
 	}
 
@@ -95,11 +93,15 @@ public class AdminRest {
 
 	// /业务
 	@RequestMapping(value = "category/add", method = RequestMethod.POST)
-	@ResponseBody
-	public SimpleMessage addCategory(Category category) {
-		SimpleMessage sm = new SimpleMessage();
-
-		return sm;
+	public String addCategory(Category category, ModelMap map) {
+		boolean b = ServiceFactory.getCategoryService().save(category);
+		if(!b){
+			map.put("error", "保存错误");
+			return "admin/categoryItem";
+		}
+		map.put("active", "categorys");
+		map.put("collapse", "category");
+		return "admin/categorys";
 	}
 
 	@RequestMapping(value = "category/edit", method = RequestMethod.POST)
@@ -119,11 +121,10 @@ public class AdminRest {
 	}
 
 	@RequestMapping(value = "product/add", method = RequestMethod.POST)
-	@ResponseBody
-	public SimpleMessage addProduct() {
-		SimpleMessage sm = new SimpleMessage();
-
-		return sm;
+	public String addProduct(Product product, ModelMap map) {
+		map.put("active", "products");
+		map.put("collapse", "product");
+		return "admin/products";
 	}
 
 	@RequestMapping(value = "product/edit", method = RequestMethod.POST)
