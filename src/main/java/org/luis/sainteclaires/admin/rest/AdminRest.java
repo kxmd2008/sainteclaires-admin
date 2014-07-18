@@ -2,14 +2,16 @@ package org.luis.sainteclaires.admin.rest;
 
 import java.util.List;
 
+import org.luis.basic.domain.FilterAttributes;
 import org.luis.basic.rest.model.SimpleMessage;
 import org.luis.basic.rest.model.SimpleMessageHead;
 import org.luis.sainteclaires.base.bean.Category;
+import org.luis.sainteclaires.base.bean.Order;
 import org.luis.sainteclaires.base.bean.Product;
 import org.luis.sainteclaires.base.bean.service.AccountService;
 import org.luis.sainteclaires.base.bean.service.ServiceFactory;
+import org.luis.sainteclaires.base.util.BaseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,17 +45,33 @@ public class AdminRest {
 		return "admin/login";
 	}
 
+	/**
+	 * 查询未发货订单
+	 * @param map
+	 * @return
+	 */
 	@RequestMapping("unsettledOrders")
 	public String unsettledOrders(ModelMap map) {
+		FilterAttributes fa = FilterAttributes.blank().add("status", 1);
+		List<Order> orders = ServiceFactory.getOrderService().findByAttributes(fa);
 		map.put("active", "unsettledOrders");
 		map.put("collapse", "order");
+		map.put("orders", orders);
 		return "admin/unsettledOrders";
 	}
 
+	/**
+	 * 查询订单
+	 * @param map
+	 * @return
+	 */
 	@RequestMapping("orders")
 	public String orders(ModelMap map) {
+		FilterAttributes fa = FilterAttributes.blank().add("status", 1);
+		List<Order> orders = ServiceFactory.getOrderService().findByAttributes(fa);
 		map.put("active", "orders");
 		map.put("collapse", "order");
+		map.put("orders", orders);
 		return "admin/orders";
 	}
 
@@ -65,11 +83,12 @@ public class AdminRest {
 		map.put("collapse", "category");
 		return "admin/categorys";
 	}
-
+	
 	@RequestMapping(value = "categoryAdd", method = RequestMethod.GET)
 	public String categoryAdd(ModelMap map) {
 		map.put("active", "categoryAdd");
 		map.put("collapse", "category");
+		map.put("parents", BaseUtil.getParentCates());
 		return "admin/categoryItem";
 	}
 
@@ -108,7 +127,11 @@ public class AdminRest {
 	@ResponseBody
 	public SimpleMessage editCategory(Category category) {
 		SimpleMessage sm = new SimpleMessage();
-
+		boolean b = ServiceFactory.getCategoryService().save(category);
+		if(!b){
+			sm.getHead().setRep_code("101");
+			sm.getHead().setRep_message("保存出错");
+		}
 		return sm;
 	}
 
@@ -116,12 +139,23 @@ public class AdminRest {
 	@ResponseBody
 	public SimpleMessage deleteCategory(Long id) {
 		SimpleMessage sm = new SimpleMessage();
-
+		boolean b = ServiceFactory.getCategoryService().deleteById(id);
+		if(!b){
+			sm.getHead().setRep_code("101");
+			sm.getHead().setRep_message("保存出错");
+		} else {
+			sm.getHead().setRep_code("200");
+			sm.getHead().setRep_message("删除成功");
+		}
 		return sm;
 	}
 
 	@RequestMapping(value = "product/add", method = RequestMethod.POST)
 	public String addProduct(Product product, ModelMap map) {
+		boolean b = ServiceFactory.getProductService().save(product);
+		if(!b){
+			map.put("error", "保存出错");
+		}
 		map.put("active", "products");
 		map.put("collapse", "product");
 		return "admin/products";
@@ -131,7 +165,11 @@ public class AdminRest {
 	@ResponseBody
 	public SimpleMessage editProduct(Product product) {
 		SimpleMessage sm = new SimpleMessage();
-
+		boolean b = ServiceFactory.getProductService().update(product);
+		if(!b){
+			sm.getHead().setRep_code("101");
+			sm.getHead().setRep_message("保存出错");
+		}
 		return sm;
 	}
 
@@ -139,7 +177,14 @@ public class AdminRest {
 	@ResponseBody
 	public SimpleMessage deleteProduct(Long id) {
 		SimpleMessage sm = new SimpleMessage();
-
+		boolean b = ServiceFactory.getProductService().deleteById(id);
+		if(!b){
+			sm.getHead().setRep_code("101");
+			sm.getHead().setRep_message("保存出错");
+		} else {
+			sm.getHead().setRep_code("200");
+			sm.getHead().setRep_message("删除成功");
+		}
 		return sm;
 	}
 
