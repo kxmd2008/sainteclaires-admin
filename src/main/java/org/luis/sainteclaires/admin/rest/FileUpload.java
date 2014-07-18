@@ -20,11 +20,12 @@ public class FileUpload {
 	public String upload(String fileName, MultipartFile imgFile) {
 		try {
 			if (!imgFile.isEmpty()) {
+				//文件上传路径
 				String file = BasicUtil.getWebAppPath() + "product/imgs/"
 						+ imgFile.getOriginalFilename();
 				FileUtil.mkdirs(file);
 				byte[] bytes = imgFile.getBytes();
-				FileOutputStream fos = new FileOutputStream(file); // 上传到写死的上传路径
+				FileOutputStream fos = new FileOutputStream(file); 
 				fos.write(bytes); // 写入文件
 				fos.close();
 			}
