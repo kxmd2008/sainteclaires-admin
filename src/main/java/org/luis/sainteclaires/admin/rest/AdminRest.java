@@ -125,9 +125,13 @@ public class AdminRest {
 	@RequestMapping("products")
 	public String products(ModelMap map) {
 		List<Product> list = ServiceFactory.getProductService().findAll();
+		List<Category> parents = BaseUtil.getParentCates();
+		Map<Long, List<Category>> subcatMap = BaseUtil.getSubCatsMap();
 		map.put("products", list);
 		map.put("active", "products");
 		map.put("collapse", "product");
+		map.put("parents", parents);
+		map.put("subcatMap", subcatMap);
 		return "admin/products";
 	}
 
