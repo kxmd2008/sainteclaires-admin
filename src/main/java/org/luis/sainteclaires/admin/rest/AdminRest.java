@@ -8,15 +8,16 @@ import javax.servlet.http.HttpServletRequest;
 import org.luis.basic.domain.FilterAttributes;
 import org.luis.basic.rest.model.SimpleMessage;
 import org.luis.basic.rest.model.SimpleMessageHead;
+import org.luis.basic.util.SpringContextFactory;
 import org.luis.sainteclaires.base.INameSpace;
 import org.luis.sainteclaires.base.bean.Account;
 import org.luis.sainteclaires.base.bean.Category;
 import org.luis.sainteclaires.base.bean.Order;
 import org.luis.sainteclaires.base.bean.Product;
-import org.luis.sainteclaires.base.bean.service.AccountService;
+import org.luis.sainteclaires.base.bean.service.ProductVoService;
 import org.luis.sainteclaires.base.bean.service.ServiceFactory;
+import org.luis.sainteclaires.base.bean.vo.ProductVo;
 import org.luis.sainteclaires.base.util.BaseUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -145,6 +146,20 @@ public class AdminRest {
 		map.put("subcatMap", subcatMap);
 		return "admin/productItem";
 	}
+	
+	@RequestMapping(value = "productEdit", method = RequestMethod.GET)
+	public String productEdit(HttpServletRequest req, ModelMap map) {
+		List<Category> parents = BaseUtil.getParentCates();
+		Map<Long, List<Category>> subcatMap = BaseUtil.getSubCatsMap();
+		Long id = Long.valueOf(req.getParameter("id"));
+		ProductVo vo = productVoService.get(id);
+		map.put("active", "productAdd");
+		map.put("collapse", "product");
+		map.put("parents", parents);
+		map.put("subcatMap", subcatMap);
+		map.put("vo", vo);
+		return "admin/productItem";
+	}
 
 	// ////// 页面跳转END /////////
 
@@ -182,28 +197,31 @@ public class AdminRest {
 		return sm;
 	}
 
-	@RequestMapping(value = "product/add", method = RequestMethod.POST)
-	public String addProduct(Product product, ModelMap map) {
-		boolean b = ServiceFactory.getProductService().save(product);
+	@RequestMapping(value = "product/save", method = RequestMethod.POST)
+	@ResponseBody
+	public SimpleMessage<Product> saveProduct(ProductVo productVo, ModelMap map) {
+		boolean b = productVoService.save(productVo);
+		SimpleMessage<Product> sm = new SimpleMessage<Product>();
 		if (!b) {
 			map.put("error", "保存出错");
-		}
-		map.put("active", "products");
-		map.put("collapse", "product");
-		return "admin/products";
-	}
-
-	@RequestMapping(value = "product/edit", method = RequestMethod.POST)
-	@ResponseBody
-	public SimpleMessage editProduct(Product product) {
-		SimpleMessage sm = new SimpleMessage();
-		boolean b = ServiceFactory.getProductService().update(product);
-		if (!b) {
-			sm.getHead().setRep_code("101");
-			sm.getHead().setRep_message("保存出错");
+			sm.getHead().setRep_code("-100");
+		} else {
+			sm.getHead().setRep_code(SimpleMessageHead.REP_OK);
 		}
 		return sm;
 	}
+
+//	@RequestMapping(value = "product/edit", method = RequestMethod.POST)
+//	@ResponseBody
+//	public SimpleMessage editProduct(ProductVo productVo) {
+//		SimpleMessage sm = new SimpleMessage();
+//		boolean b = ServiceFactory.getProductService().update(product);
+//		if (!b) {
+//			sm.getHead().setRep_code("101");
+//			sm.getHead().setRep_message("保存出错");
+//		}
+//		return sm;
+//	}
 
 	@RequestMapping(value = "product/delete", method = RequestMethod.GET)
 	@ResponseBody
@@ -239,7 +257,7 @@ public class AdminRest {
 		map.put("collapse", "order");
 	}
 
-	@Autowired
-	private AccountService accountService;
+	private ProductVoService productVoService = SpringContextFactory
+			.getSpringBean(ProductVoService.class);
 
 }
