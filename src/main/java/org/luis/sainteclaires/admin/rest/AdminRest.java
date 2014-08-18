@@ -55,40 +55,6 @@ public class AdminRest {
 		return "admin/login";
 	}
 
-	/**
-	 * 查询未发货订单
-	 * 
-	 * @param map
-	 * @return
-	 */
-	@RequestMapping("unsettledOrders")
-	public String unsettledOrders(ModelMap map) {
-		FilterAttributes fa = FilterAttributes.blank().add("status", 1);
-		List<Order> orders = ServiceFactory.getOrderService().findByAttributes(
-				fa);
-		map.put("active", "unsettledOrders");
-		map.put("collapse", "order");
-		map.put("orders", orders);
-		return "admin/unsettledOrders";
-	}
-
-	/**
-	 * 查询订单
-	 * 
-	 * @param map
-	 * @return
-	 */
-	@RequestMapping("orders")
-	public String orders(ModelMap map) {
-		FilterAttributes fa = FilterAttributes.blank().add("status", 1);
-		List<Order> orders = ServiceFactory.getOrderService().findByAttributes(
-				fa);
-		map.put("active", "orders");
-		map.put("collapse", "order");
-		map.put("orders", orders);
-		return "admin/orders";
-	}
-
 	@RequestMapping("categorys")
 	public String categorys(ModelMap map) {
 		setCats(map);
