@@ -31,7 +31,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class AdminRest {
 	@RequestMapping("admin")
 	public String login() {
-		return "admin/login";
+		return "customer/login";
+	}
+	@RequestMapping("register")
+	public String register(){
+		return "customer/register";
+	}
+	@RequestMapping("submitOrder")
+	public String submitOrder(){
+		return "customer/submit_order";
 	}
  
 	@RequestMapping(value = "login", method = RequestMethod.POST)
