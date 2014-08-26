@@ -58,7 +58,7 @@ public class AdminRest {
 	@RequestMapping(value = "logout", method = RequestMethod.POST)
 	public String logout(HttpServletRequest req) {
 		req.getSession().removeAttribute(INameSpace.KEY_SESSION_ADMIN);
-		return "admin/login";
+		return "redirect:/admin/login";
 	}
 
 	@RequestMapping("categorys")
