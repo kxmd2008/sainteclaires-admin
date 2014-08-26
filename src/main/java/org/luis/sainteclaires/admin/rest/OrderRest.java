@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONObject;
-
 import org.apache.log4j.Logger;
 import org.luis.basic.domain.FilterAttributes;
 import org.luis.basic.rest.model.DatatableBean;

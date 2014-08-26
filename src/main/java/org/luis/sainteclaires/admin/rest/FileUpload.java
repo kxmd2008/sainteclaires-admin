@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.luis.basic.rest.model.SimpleMessage;
-import org.luis.basic.rest.model.SimpleMessageHead;
 import org.luis.sainteclaires.base.util.BaseUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +22,7 @@ public class FileUpload {
 	@ResponseBody
 	@RequestMapping(value = "auth/upload", method = RequestMethod.POST)
 	public SimpleMessage<Object> upload(String fileName, MultipartHttpServletRequest request) {
-		SimpleMessage<Object> sm = new SimpleMessage<Object>(SimpleMessageHead.OK);
+		SimpleMessage<Object> sm = new SimpleMessage<Object>();
 		try {
 			List<MultipartFile> files = request.getFiles("files");
 			if (!files.isEmpty()) {
