@@ -11,6 +11,7 @@ import org.luis.basic.util.SpringContextFactory;
 import org.luis.sainteclaires.base.INameSpace;
 import org.luis.sainteclaires.base.bean.Account;
 import org.luis.sainteclaires.base.bean.Category;
+import org.luis.sainteclaires.base.bean.CategoryProduct;
 import org.luis.sainteclaires.base.bean.Product;
 import org.luis.sainteclaires.base.bean.ProductVo;
 import org.luis.sainteclaires.base.bean.service.ProductVoService;
@@ -173,6 +174,13 @@ public class AdminRest {
 	@ResponseBody
 	public SimpleMessage<Product> saveProduct(ProductVo productVo, ModelMap map) {
 		boolean b = productVoService.save(productVo);
+		String[] ids = productVo.getCategoryId().split(",");
+		for (String id : ids) {
+			CategoryProduct cp = new CategoryProduct();
+			cp.setCategoryId(Long.valueOf(id));
+			cp.setProductId(productVo.getId());
+			ServiceFactory.getCateProductService().save(cp);
+		}
 		SimpleMessage<Product> sm = new SimpleMessage<Product>();
 		if (!b) {
 			map.put("error", "保存出错");
