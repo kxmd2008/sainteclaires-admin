@@ -7,6 +7,9 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.luis.basic.rest.model.SimpleMessage;
 import org.luis.basic.rest.model.SimpleMessageHead;
 import org.luis.basic.util.SpringContextFactory;
@@ -187,11 +190,12 @@ public class AdminRest {
 	@RequestMapping(value = "product/save", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleMessage<Product> saveProduct(ProductVo productVo, ModelMap map) {
+		JSONArray json = JSONArray.fromObject(productVo.getCategoryId());
+		Object[] ids = json.toArray();
 		boolean b = productVoService.save(productVo);
-		String[] ids = productVo.getCategoryId().split(",");
 		ProductVo vo = productVoService.get(productVo.getId());
-		for (String id : ids) {
-			Long cateId = Long.valueOf(id);
+		for (Object id : ids) {
+			Long cateId = Long.valueOf(id.toString());
 			if(!vo.getCateIds().contains(cateId)){
 				CategoryProduct cp = new CategoryProduct();
 				cp.setCategoryId(cateId);
