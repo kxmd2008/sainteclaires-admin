@@ -1,7 +1,9 @@
 package org.luis.sainteclaires.admin.rest;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -126,6 +128,18 @@ public class AdminRest {
 		Map<Long, List<Category>> subcatMap = BaseUtil.getSubCatsMap();
 		Long id = Long.valueOf(req.getParameter("id"));
 		ProductVo vo = productVoService.get(id);
+		Iterator<Entry<Long, List<Category>>> it = subcatMap.entrySet().iterator();
+		while(it.hasNext()){
+			Entry<Long, List<Category>> e = it.next();
+			for (Category category : e.getValue()) {
+				for (Category selected : vo.getCategorys()) {
+					if(selected.getId().equals(category.getId())){
+						category.setSelected(true);
+						break;
+					}
+				}
+			}
+		}
 		map.put("active", "productAdd");
 		map.put("collapse", "product");
 		map.put("parents", parents);
@@ -175,11 +189,15 @@ public class AdminRest {
 	public SimpleMessage<Product> saveProduct(ProductVo productVo, ModelMap map) {
 		boolean b = productVoService.save(productVo);
 		String[] ids = productVo.getCategoryId().split(",");
+		ProductVo vo = productVoService.get(productVo.getId());
 		for (String id : ids) {
-			CategoryProduct cp = new CategoryProduct();
-			cp.setCategoryId(Long.valueOf(id));
-			cp.setProductId(productVo.getId());
-			ServiceFactory.getCateProductService().save(cp);
+			Long cateId = Long.valueOf(id);
+			if(!vo.getCateIds().contains(cateId)){
+				CategoryProduct cp = new CategoryProduct();
+				cp.setCategoryId(cateId);
+				cp.setProductId(productVo.getId());
+				ServiceFactory.getCateProductService().save(cp);
+			}
 		}
 		SimpleMessage<Product> sm = new SimpleMessage<Product>();
 		if (!b) {
