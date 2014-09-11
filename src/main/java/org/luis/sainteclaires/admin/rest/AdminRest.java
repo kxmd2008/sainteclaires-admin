@@ -33,18 +33,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/auth")
 // @Secured("ROLE_ADMIN")
 public class AdminRest {
-//	@RequestMapping("admin")
-//	public String login() {
-//		return "customer/login";
-//	}
-//	@RequestMapping("register")
-//	public String register(){
-//		return "customer/register";
-//	}
-//	@RequestMapping("submitOrder")
-//	public String submitOrder(){
-//		return "customer/submit_order";
-//	}
+	
+	@RequestMapping("admin")
+	public String login() {
+		return "admin/login";
+	}
  
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	public String login(String loginName, String password, ModelMap map,
@@ -58,7 +51,7 @@ public class AdminRest {
 		map.put("account", sm.getItem().getLoginName());
 		map.put("active", "unsettledOrders");
 		map.put("collapse", "order");
-		return "admin/categorys";
+		return "admin/unsettledOrders";
 	}
 
 	@RequestMapping(value = "logout", method = RequestMethod.POST)
