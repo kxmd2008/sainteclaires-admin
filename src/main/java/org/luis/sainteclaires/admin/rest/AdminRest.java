@@ -18,7 +18,6 @@ import org.luis.sainteclaires.base.INameSpace;
 import org.luis.sainteclaires.base.bean.Account;
 import org.luis.sainteclaires.base.bean.Category;
 import org.luis.sainteclaires.base.bean.CategoryProduct;
-import org.luis.sainteclaires.base.bean.Order;
 import org.luis.sainteclaires.base.bean.Product;
 import org.luis.sainteclaires.base.bean.ProductVo;
 import org.luis.sainteclaires.base.bean.service.ProductVoService;
@@ -82,6 +81,20 @@ public class AdminRest {
 		tb.setDraw(draw + 1);
 		tb.setRecordsFiltered(count);
 		tb.setRecordsTotal(count);
+		return tb;
+	}
+	
+	@RequestMapping(value = "category/find/{parentId}", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatableBean<Category> findCatesByPid(@PathVariable("parentId") Long parentId, HttpServletRequest req) {
+		int draw = Integer.parseInt(req.getParameter("draw") == null ? "10" : req.getParameter("draw"));
+		FilterAttributes fa = FilterAttributes.blank().add("parentId", parentId);
+		List<Category> categories = ServiceFactory.getCategoryService().findByAttributes(fa);
+		DatatableBean<Category> tb = new DatatableBean<Category>();
+		tb.setData(categories);
+		tb.setDraw(draw + 1);
+		tb.setRecordsFiltered(categories.size());
+		tb.setRecordsTotal(categories.size());
 		return tb;
 	}
 
