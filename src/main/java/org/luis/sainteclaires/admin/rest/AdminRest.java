@@ -8,8 +8,9 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
+import org.luis.basic.domain.FilterAttributes;
+import org.luis.basic.rest.model.DatatableBean;
 import org.luis.basic.rest.model.SimpleMessage;
 import org.luis.basic.rest.model.SimpleMessageHead;
 import org.luis.basic.util.SpringContextFactory;
@@ -17,6 +18,7 @@ import org.luis.sainteclaires.base.INameSpace;
 import org.luis.sainteclaires.base.bean.Account;
 import org.luis.sainteclaires.base.bean.Category;
 import org.luis.sainteclaires.base.bean.CategoryProduct;
+import org.luis.sainteclaires.base.bean.Order;
 import org.luis.sainteclaires.base.bean.Product;
 import org.luis.sainteclaires.base.bean.ProductVo;
 import org.luis.sainteclaires.base.bean.service.ProductVoService;
@@ -64,6 +66,23 @@ public class AdminRest {
 	public String categorys(ModelMap map) {
 		setCats(map);
 		return "admin/categorys";
+	}
+	
+	@RequestMapping(value = "category/find", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatableBean<Category> findCates(HttpServletRequest req , ModelMap map) {
+		int start = Integer.parseInt(req.getParameter("start") == null ? "0" : req.getParameter("start"));
+		int length = Integer.parseInt(req.getParameter("length") == null ? "10" : req.getParameter("length"));
+		int draw = Integer.parseInt(req.getParameter("draw") == null ? "10" : req.getParameter("draw"));
+		FilterAttributes fa = FilterAttributes.blank();
+		List<Category> categories = ServiceFactory.getCategoryService().findPaginationByAttributes(fa, start, length);
+		int count = ServiceFactory.getCategoryService().findCountByAttributes(fa);
+		DatatableBean<Category> tb = new DatatableBean<Category>();
+		tb.setData(categories);
+		tb.setDraw(draw + 1);
+		tb.setRecordsFiltered(count);
+		tb.setRecordsTotal(count);
+		return tb;
 	}
 
 	@RequestMapping(value = "category/find", method = RequestMethod.POST)
