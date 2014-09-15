@@ -1,5 +1,7 @@
 package org.luis.sainteclaires.admin.rest;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +19,6 @@ import org.luis.basic.util.SpringContextFactory;
 import org.luis.sainteclaires.base.INameSpace;
 import org.luis.sainteclaires.base.bean.Account;
 import org.luis.sainteclaires.base.bean.Category;
-import org.luis.sainteclaires.base.bean.CategoryProduct;
 import org.luis.sainteclaires.base.bean.Product;
 import org.luis.sainteclaires.base.bean.ProductVo;
 import org.luis.sainteclaires.base.bean.service.ProductVoService;
@@ -128,15 +129,36 @@ public class AdminRest {
 
 	@RequestMapping("products")
 	public String products(ModelMap map) {
-		List<Product> list = ServiceFactory.getProductService().findAll();
-		List<Category> parents = BaseUtil.getParentCates();
-		Map<Long, List<Category>> subcatMap = BaseUtil.getSubCatsMap();
-		map.put("products", list);
+//		List<Product> list = ServiceFactory.getProductService().findAll();
+//		List<Category> parents = BaseUtil.getParentCates();
+//		Map<Long, List<Category>> subcatMap = BaseUtil.getSubCatsMap();
+//		map.put("products", list);
 		map.put("active", "products");
 		map.put("collapse", "product");
-		map.put("parents", parents);
-		map.put("subcatMap", subcatMap);
+//		map.put("parents", parents);
+//		map.put("subcatMap", subcatMap);
 		return "admin/products";
+	}
+	@RequestMapping(value = "products/find" , method = RequestMethod.GET)
+	@ResponseBody
+	public DatatableBean<Product> findProducts(HttpServletRequest req , ModelMap map){
+		int start = Integer.parseInt(req.getParameter("start") == null ? "0" : req.getParameter("start"));
+		int length = Integer.parseInt(req.getParameter("length") == null ? "10" : req.getParameter("length"));
+		int draw = Integer.parseInt(req.getParameter("draw") == null ? "10" : req.getParameter("draw"));
+		
+//		List<Product> list = ServiceFactory.getProductService().findAll();
+//		List<Category> parents = BaseUtil.getParentCates();
+//		Map<Long, List<Category>> subcatMap = BaseUtil.getSubCatsMap();
+		
+		FilterAttributes fa = FilterAttributes.blank();
+		List<Product> products = ServiceFactory.getProductService().findPaginationByAttributes(fa, start, length);
+		int count = ServiceFactory.getProductService().findCountByAttributes(fa);
+		DatatableBean<Product> tb = new DatatableBean<Product>();
+		tb.setData(products);
+		tb.setDraw(draw + 1);
+		tb.setRecordsFiltered(count);
+		tb.setRecordsTotal(count);
+		return tb;
 	}
 
 	@RequestMapping(value = "productAdd", method = RequestMethod.GET)
@@ -217,17 +239,22 @@ public class AdminRest {
 	public SimpleMessage<Product> saveProduct(ProductVo productVo, ModelMap map) {
 		JSONArray json = JSONArray.fromObject(productVo.getCategoryId());
 		Object[] ids = json.toArray();
-		boolean b = productVoService.save(productVo);
-		ProductVo vo = productVoService.get(productVo.getId());
-		for (Object id : ids) {
-			Long cateId = Long.valueOf(id.toString());
-			if(!vo.getCateIds().contains(cateId)){
-				CategoryProduct cp = new CategoryProduct();
-				cp.setCategoryId(cateId);
-				cp.setProductId(productVo.getId());
-				ServiceFactory.getCateProductService().save(cp);
-			}
+		List<Long> idList = new ArrayList<Long>();
+		for (int i = 0; i < ids.length; i++) {
+			idList.add(Long.valueOf(ids[i].toString()));
 		}
+		productVo.setCateIds(idList);
+		boolean b = productVoService.save(productVo);
+//		ProductVo vo = productVoService.get(productVo.getId());
+//		for (Object id : ids) {
+//			Long cateId = Long.valueOf(id.toString());
+//			if(!vo.getCateIds().contains(cateId)){
+//				CategoryProduct cp = new CategoryProduct();
+//				cp.setCategoryId(cateId);
+//				cp.setProductId(productVo.getId());
+//				ServiceFactory.getCateProductService().save(cp);
+//			}
+//		}
 		SimpleMessage<Product> sm = new SimpleMessage<Product>();
 		if (!b) {
 			map.put("error", "保存出错");
