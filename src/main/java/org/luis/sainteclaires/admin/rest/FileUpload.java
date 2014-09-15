@@ -34,7 +34,6 @@ public class FileUpload {
 				}
 				for (int i = 0; i < files.size(); i++) {
 					if (!files.get(i).isEmpty()) {
-						System.out.println(files.get(i).getOriginalFilename());
 						String path = filepath + files.get(i).getOriginalFilename();
 						logger.info("上传文件：" + path);
 						byte[] bytes = files.get(i).getBytes();
@@ -42,7 +41,6 @@ public class FileUpload {
 						fos.write(bytes);
 						fos.close();
 					}
-					System.out.println("Ok");
 				}
 				logger.info("上传文件成功！");
 			}
