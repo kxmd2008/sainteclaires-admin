@@ -1,7 +1,7 @@
 package org.luis.sainteclaires.admin.rest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -141,7 +141,7 @@ public class AdminRest {
 	}
 	@RequestMapping(value = "products/find" , method = RequestMethod.GET)
 	@ResponseBody
-	public DatatableBean<Product> findProducts(HttpServletRequest req , ModelMap map){
+	public DatatableBean<ProductVo> findProducts(HttpServletRequest req , ModelMap map){
 		int start = Integer.parseInt(req.getParameter("start") == null ? "0" : req.getParameter("start"));
 		int length = Integer.parseInt(req.getParameter("length") == null ? "10" : req.getParameter("length"));
 		int draw = Integer.parseInt(req.getParameter("draw") == null ? "10" : req.getParameter("draw"));
@@ -151,10 +151,15 @@ public class AdminRest {
 //		Map<Long, List<Category>> subcatMap = BaseUtil.getSubCatsMap();
 		
 		FilterAttributes fa = FilterAttributes.blank();
-		List<Product> products = ServiceFactory.getProductService().findPaginationByAttributes(fa, start, length);
+//		List<Product> products = ServiceFactory.getProductService().findPaginationByAttributes(fa, start, length);
+		Map<String,Integer> parameters = new HashMap<String,Integer>();
+		parameters.put("start",start);
+		parameters.put("length", length);
+		List<ProductVo> productVOs = BaseUtil.getProductVoService().getProductByPage(parameters);
+		
 		int count = ServiceFactory.getProductService().findCountByAttributes(fa);
-		DatatableBean<Product> tb = new DatatableBean<Product>();
-		tb.setData(products);
+		DatatableBean<ProductVo> tb = new DatatableBean<ProductVo>();
+		tb.setData(productVOs);
 		tb.setDraw(draw + 1);
 		tb.setRecordsFiltered(count);
 		tb.setRecordsTotal(count);
@@ -279,8 +284,8 @@ public class AdminRest {
 
 	@RequestMapping(value = "product/delete", method = RequestMethod.GET)
 	@ResponseBody
-	public SimpleMessage deleteProduct(Long id) {
-		SimpleMessage sm = new SimpleMessage();
+	public SimpleMessage<?> deleteProduct(Long id) {
+		SimpleMessage<?> sm = new SimpleMessage<Object>();
 		boolean b = ServiceFactory.getProductService().deleteById(id);
 		if (!b) {
 			sm.getHead().setRep_code("101");
