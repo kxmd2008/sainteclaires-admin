@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.luis.basic.rest.model.SimpleMessage;
+import org.luis.sainteclaires.base.INameSpace;
 import org.luis.sainteclaires.base.util.BaseUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,10 +25,17 @@ public class FileUpload {
 	public SimpleMessage<Object> upload(String fileName, MultipartHttpServletRequest request) {
 		SimpleMessage<Object> sm = new SimpleMessage<Object>();
 		try {
+			String type = (String) request.getParameter("type");
+			String filepath = null;
+			if(INameSpace.TYPE_BGPIC.equals(type)){
+				filepath = BaseUtil.getBgPath();
+			} else {
+				filepath = BaseUtil.getProductPath();
+			}
 			List<MultipartFile> files = request.getFiles("files");
 			if (!files.isEmpty()) {
 				// 文件上传路径
-				String filepath = BaseUtil.getProductPath();
+				
 				File file = new File(filepath);
 				if(!file.exists()){
 					file.mkdirs();
