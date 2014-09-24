@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.luis.basic.domain.FilterAttributes;
+import org.luis.basic.rest.model.DatatableBean;
 import org.luis.basic.rest.model.SimpleMessage;
 import org.luis.sainteclaires.base.INameSpace;
 import org.luis.sainteclaires.base.bean.Category;
@@ -51,18 +52,28 @@ public class BackGroundRest {
 	
 	@RequestMapping("bg/find")
 	@ResponseBody
-	public SimpleMessage<Picture> bgFind(ModelMap map){
-		SimpleMessage<Picture> sm = new SimpleMessage<Picture>();
+	public DatatableBean<Picture> bgFind(ModelMap map , HttpServletRequest req){
+//		int start = Integer.parseInt(req.getParameter("start") == null ? "0" : req.getParameter("start"));
+//		int length = Integer.parseInt(req.getParameter("length") == null ? "10" : req.getParameter("length"));
+		int draw = Integer.parseInt(req.getParameter("draw") == null ? "10" : req.getParameter("draw"));
+//		SimpleMessage<Picture> sm = new SimpleMessage<Picture>();
 		FilterAttributes fa = FilterAttributes.blank().add("type", INameSpace.TYPE_BGPIC);
 		List<Config> list = ServiceFactory.getConfigService().findByAttributes(fa);
+		DatatableBean<Picture> tb = new DatatableBean<Picture>();
+		List<Picture> pics = new ArrayList<Picture>();
 		for (Config config : list) {
 			Picture p = new Picture();
 			p.setId(config.getId());
 			p.setName(config.getKey());
 			p.setPics(parsePic(config.getValue()));
-			sm.addRecord(p);
+//			sm.addRecord(p);
+			pics.add(p);
 		}
-		return sm;
+		tb.setData(pics);
+		tb.setDraw(draw + 1);
+		tb.setRecordsFiltered(pics.size());
+		tb.setRecordsTotal(pics.size());
+		return tb;
 	}
 	
 	@RequestMapping(value="bg/save", method=RequestMethod.POST)
