@@ -13,6 +13,7 @@ import org.luis.sainteclaires.base.bean.Order;
 import org.luis.sainteclaires.base.bean.service.ServiceFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -70,12 +71,12 @@ public class OrderRest {
 	 * @param map
 	 * @return
 	 */
-	@RequestMapping(value = "unsettledOrders/send", method = RequestMethod.GET)
+	@RequestMapping(value = "unsettledOrders/send/{id}", method = RequestMethod.GET)
 	@ResponseBody
-	public SimpleMessage<?> dealUnsettleOrders(HttpServletRequest req, ModelMap map){
+	public SimpleMessage<?> dealUnsettleOrders(@PathVariable("id")long id ,HttpServletRequest req, ModelMap map){
 		try {
-			long id = 0;
-			id = Long.parseLong(req.getParameter("id"));
+//			long id = 0;
+//			id = Long.parseLong(req.getParameter("id"));
 			Order order = ServiceFactory.getOrderService().get(id);
 			order.setStatus(Order.STATUS_SENDED);
 			ServiceFactory.getOrderService().update(order);
