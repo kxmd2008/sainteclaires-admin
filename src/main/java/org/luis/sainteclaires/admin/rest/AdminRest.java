@@ -53,6 +53,7 @@ public class AdminRest {
 		map.put("account", sm.getItem().getLoginName());
 		map.put("active", "unsettledOrders");
 		map.put("collapse", "order");
+		BaseUtil.setSessionAttr(req, INameSpace.KEY_SESSION_LOCALE, "zh_CN");
 		return "admin/unsettledOrders";
 	}
 
