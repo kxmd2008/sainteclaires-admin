@@ -210,6 +210,16 @@ public class AdminRest {
 	@ResponseBody
 	public SimpleMessage<Category> saveCategory(Category category, ModelMap map) {
 		SimpleMessage<Category> sm = new SimpleMessage<Category>();
+		if(category.getParentId() != null){
+			List<Category> list = BaseUtil.getParentCates();
+			for (Category category2 : list) {
+				if(category2.getId().equals(category.getParentId())){
+					category.setParentName(category2.getName());
+					category.setParentNameEn(category2.getNameEn());
+					break;
+				}
+			}
+		}
 		boolean b = ServiceFactory.getCategoryService().save(category);
 		if (!b) {
 			sm.getHead().setRep_code("101");
