@@ -56,10 +56,10 @@ public class AdminRest {
 		return "admin/unsettledOrders";
 	}
 
-	@RequestMapping(value = "logout", method = RequestMethod.POST)
+	@RequestMapping(value = "logout", method = RequestMethod.GET)
 	public String logout(HttpServletRequest req) {
 		req.getSession().removeAttribute(INameSpace.KEY_SESSION_ADMIN);
-		return "redirect:/admin/login";
+		return "redirect:/auth/admin";
 	}
 
 	@RequestMapping("categorys")
