@@ -19,6 +19,7 @@ import org.luis.basic.util.SpringContextFactory;
 import org.luis.sainteclaires.base.INameSpace;
 import org.luis.sainteclaires.base.bean.Account;
 import org.luis.sainteclaires.base.bean.Category;
+import org.luis.sainteclaires.base.bean.Config;
 import org.luis.sainteclaires.base.bean.Product;
 import org.luis.sainteclaires.base.bean.ProductVo;
 import org.luis.sainteclaires.base.bean.service.ProductVoService;
@@ -304,6 +305,25 @@ public class AdminRest {
 		} else {
 			sm.getHead().setRep_code("200");
 			sm.getHead().setRep_message("删除成功");
+		}
+		return sm;
+	}
+	
+	@RequestMapping(value = "quarter/change/{quarter}", method = RequestMethod.GET)
+	@ResponseBody
+	public SimpleMessage<?> quarterChange(@PathVariable("quarter")Integer quarter) {
+		SimpleMessage<?> sm = new SimpleMessage<Object>();
+		Config config = BaseUtil.getCurrQuarter();
+		if(config == null){
+			config = new Config();
+			config.setKey("quarter");
+			config.setDescription("");
+			config.setType("");
+		} 
+		config.setValue(quarter.toString());
+		boolean b = ServiceFactory.getConfigService().save(config);
+		if(b){
+			BaseUtil.setCurrQuarter(config);
 		}
 		return sm;
 	}
