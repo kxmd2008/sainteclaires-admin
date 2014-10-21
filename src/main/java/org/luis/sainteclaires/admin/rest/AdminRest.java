@@ -318,7 +318,7 @@ public class AdminRest {
 			config = new Config();
 			config.setKey("quarter");
 			config.setDescription("");
-			config.setType("");
+			config.setType("QUARTER");
 		} 
 		config.setValue(quarter.toString());
 		boolean b = ServiceFactory.getConfigService().save(config);
