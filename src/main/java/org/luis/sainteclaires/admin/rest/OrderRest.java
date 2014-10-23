@@ -11,6 +11,7 @@ import org.luis.basic.rest.model.SimpleMessage;
 import org.luis.basic.rest.model.SimpleMessageHead;
 import org.luis.sainteclaires.base.bean.Order;
 import org.luis.sainteclaires.base.bean.service.ServiceFactory;
+import org.luis.sainteclaires.base.util.BaseUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,12 +30,13 @@ public class OrderRest {
 	 * @return
 	 */
 	@RequestMapping("unsettledOrders")
-	public String unsettledOrders(ModelMap map) {
+	public String unsettledOrders(HttpServletRequest req, ModelMap map) {
 //		FilterAttributes fa = FilterAttributes.blank().add("status", 1);
 //		List<Order> orders = ServiceFactory.getOrderService().findByAttributes(
 //				fa);
 		map.put("active", "unsettledOrders");
 		map.put("collapse", "order");
+		BaseUtil.setSessionAttr(req, "quarter", BaseUtil.getCurrQuarter().getValue());
 //		map.put("orders", orders);
 		return "admin/unsettledOrders";
 	}
@@ -122,8 +124,8 @@ public class OrderRest {
 		int start = Integer.parseInt(req.getParameter("start") == null ? "0" : req.getParameter("start"));
 		int length = Integer.parseInt(req.getParameter("length") == null ? "10" : req.getParameter("length"));
 		int draw = Integer.parseInt(req.getParameter("draw") == null ? "10" : req.getParameter("draw"));
-		String orderNo1 = req.getParameter("orderNo");
-		String customerNo1 = req.getParameter("customerNo");
+//		String orderNo1 = req.getParameter("orderNo");
+//		String customerNo1 = req.getParameter("customerNo");
 		FilterAttributes fa = FilterAttributes.blank();
 		if(orderNo != null && !orderNo.equals("")){
 			fa.add("orderNo", orderNo);
