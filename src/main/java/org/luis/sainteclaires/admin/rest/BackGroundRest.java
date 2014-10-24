@@ -81,16 +81,15 @@ public class BackGroundRest {
 	public SimpleMessage<Picture> bgsave(Picture pic, ModelMap map){
 		SimpleMessage<Picture> sm = new SimpleMessage<Picture>();
 		FilterAttributes fa = FilterAttributes.blank().add("key", pic.getName());
-		Config config1 = ServiceFactory.getConfigService().findOneByFilter(fa);
-		if(config1 != null && pic.getId() != null && pic.getId().equals(config1.getId())){
+		Config config = ServiceFactory.getConfigService().findOneByFilter(fa);
+		if(config != null && pic.getId() == null && pic.getId().equals(config.getId())){
 			sm.getHead().setRep_code("2001");
 			sm.getHead().setRep_message("保存失败!"+pic.getName() + "背景图片已存在");;
 			return sm;
 		}
-		Config config = new Config();
-		config.setId(pic.getId());
-		config.setKey(pic.getName());
-		config.setType(INameSpace.TYPE_BGPIC);
+		if(config == null){
+			config = new Config();
+		}
 		StringBuilder sb = new StringBuilder();
 		for (String s : pic.getPics()) {
 			sb.append(BaseUtil.getBgPath2()).append(s).append(",");
