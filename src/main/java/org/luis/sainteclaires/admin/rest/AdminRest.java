@@ -311,7 +311,7 @@ public class AdminRest {
 	
 	@RequestMapping(value = "quarter/change/{quarter}", method = RequestMethod.GET)
 	@ResponseBody
-	public SimpleMessage<?> quarterChange(@PathVariable("quarter")Integer quarter) {
+	public SimpleMessage<?> quarterChange(@PathVariable("quarter")Integer quarter, HttpServletRequest req) {
 		SimpleMessage<?> sm = new SimpleMessage<Object>();
 		Config config = BaseUtil.getCurrQuarter();
 		if(config == null){
@@ -324,6 +324,7 @@ public class AdminRest {
 		boolean b = ServiceFactory.getConfigService().save(config);
 		if(b){
 			BaseUtil.setCurrQuarter(config);
+			BaseUtil.setSessionAttr(req, "quarter", BaseUtil.getCurrQuarter().getValue());
 		}
 		return sm;
 	}
