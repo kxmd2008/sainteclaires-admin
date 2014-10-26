@@ -82,7 +82,7 @@ public class BackGroundRest {
 		SimpleMessage<Picture> sm = new SimpleMessage<Picture>();
 		FilterAttributes fa = FilterAttributes.blank().add("key", pic.getName());
 		Config config = ServiceFactory.getConfigService().findOneByFilter(fa);
-		if(config != null && pic.getId() == null && config.getId().equals(pic.getId())){
+		if(config != null && pic.getId() == null && config.getKey().equals(pic.getName())){
 			sm.getHead().setRep_code("2001");
 			sm.getHead().setRep_message("保存失败!"+pic.getName() + "背景图片已存在");;
 			return sm;
@@ -95,8 +95,8 @@ public class BackGroundRest {
 			sb.append(BaseUtil.getBgPath2()).append(s).append(",");
 		}
 		config.setValue(sb.deleteCharAt(sb.length()-1).toString());
-		config.setKey(INameSpace.TYPE_BGPIC);
-		config.setType(pic.getName());
+		config.setKey(pic.getName());
+		config.setType(INameSpace.TYPE_BGPIC);
 		ServiceFactory.getConfigService().save(config);
 		BaseUtil.storeBgPic(config.getKey(), BaseUtil.config2Pic(config));
 		return sm;
