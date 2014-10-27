@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.luis.basic.domain.FilterAttribute;
 import org.luis.basic.domain.FilterAttributes;
 import org.luis.basic.rest.model.DatatableBean;
 import org.luis.basic.rest.model.SimpleMessage;
@@ -52,7 +53,7 @@ public class OrderRest {
 		int start = Integer.parseInt(req.getParameter("start") == null ? "0" : req.getParameter("start"));
 		int length = Integer.parseInt(req.getParameter("length") == null ? "10" : req.getParameter("length"));
 		int draw = Integer.parseInt(req.getParameter("draw") == null ? "10" : req.getParameter("draw"));
-		FilterAttributes fa = FilterAttributes.blank().add("status", Order.STATUS_UNDEAL);
+		FilterAttributes fa = FilterAttributes.blank().add("status", Order.STATUS_UNDEAL).or(FilterAttributes.blank().add("status", FilterAttribute.OP_EQUAL, Order.STATUS_RETURN, "status1"));
 //		String sql = "select * from cust_order where status = " + Order.STATUS_UNDEAL + " limit " + start +","+length;
 		//分页
 		List<Order> orders = ServiceFactory.getOrderService().findPaginationByAttributes(fa, start, length);
@@ -81,6 +82,29 @@ public class OrderRest {
 //			id = Long.parseLong(req.getParameter("id"));
 			Order order = ServiceFactory.getOrderService().get(id);
 			order.setStatus(Order.STATUS_SENDED);
+			ServiceFactory.getOrderService().update(order);
+			return new SimpleMessage<Object>(new SimpleMessageHead(SimpleMessageHead.REP_OK, "修改状态为已发送"));
+		} catch (NumberFormatException e) {
+			logger.debug(e.getMessage());
+			return new SimpleMessage<Object>(new SimpleMessageHead(SimpleMessageHead.REP_SERVICE_ERROR, "修改状态为已发送"));
+		}
+		
+	}
+	
+	
+	/**
+	 * 拒绝换货
+	 * @param id
+	 * @param req
+	 * @param map
+	 * @return
+	 */
+	@RequestMapping(value = "unsettledOrders/reject/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	public SimpleMessage<?> rejectUnsettleOrders(@PathVariable("id")Long id ,HttpServletRequest req, ModelMap map){
+		try {
+			Order order = ServiceFactory.getOrderService().get(id);
+			order.setStatus(Order.STATUS_RETURN_REJECT);
 			ServiceFactory.getOrderService().update(order);
 			return new SimpleMessage<Object>(new SimpleMessageHead(SimpleMessageHead.REP_OK, "修改状态为已发送"));
 		} catch (NumberFormatException e) {
