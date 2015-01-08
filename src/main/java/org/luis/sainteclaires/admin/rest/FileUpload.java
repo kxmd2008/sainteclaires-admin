@@ -29,13 +29,51 @@ public class FileUpload {
 			String filepath = null;
 			if(INameSpace.TYPE_BGPIC.equals(type)){
 				filepath = BaseUtil.getBgPath();
+			} else if(INameSpace.TYPE_PIC_SHOW.equals(type)){
+				String year = (String) request.getParameter("year");
+				String quarter = (String) request.getParameter("quarter");
+				filepath = BaseUtil.getSHowPath() + year + "/" + quarter + "/";
 			} else {
 				filepath = BaseUtil.getProductPath();
 			}
 			List<MultipartFile> files = request.getFiles("files");
 			if (!files.isEmpty()) {
 				// 文件上传路径
-				
+				File file = new File(filepath);
+				if(!file.exists()){
+					file.mkdirs();
+				}
+				for (int i = 0; i < files.size(); i++) {
+					if (!files.get(i).isEmpty()) {
+						String path = filepath + files.get(i).getOriginalFilename();
+						logger.info("上传文件：" + path);
+						byte[] bytes = files.get(i).getBytes();
+						FileOutputStream fos = new FileOutputStream(path); // 写入文件
+						fos.write(bytes);
+						fos.close();
+					}
+				}
+				logger.info("上传文件成功！");
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sm;
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "auth/upload2", method = RequestMethod.POST)
+	public SimpleMessage<Object> upload2(String fileName, MultipartHttpServletRequest request) {
+		SimpleMessage<Object> sm = new SimpleMessage<Object>();
+		try {
+//			String type = (String) request.getParameter("type");
+			String filepath = null;
+			List<MultipartFile> files = request.getFiles("files");
+			if (!files.isEmpty()) {
+				// 文件上传路径
 				File file = new File(filepath);
 				if(!file.exists()){
 					file.mkdirs();
