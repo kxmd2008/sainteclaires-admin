@@ -28,10 +28,11 @@ public class PicShowAdminRest {
 
 	@RequestMapping("showPic")
 	public String toUploadPicPage(ModelMap map){
-		List<Category> parents = BaseUtil.getParentCates();
-		Map<Long, List<Category>> subcatMap = BaseUtil.getSubCatsMap();
+//		List<Category> parents = BaseUtil.getParentCates();
+		List<Category> parents = BaseUtil.getShowCates();
+//		Map<Long, List<Category>> subcatMap = BaseUtil.getSubCatsMap();
 		map.put("parents", parents);
-		map.put("subcatMap", subcatMap);
+//		map.put("subcatMap", subcatMap);
 		return "admin/picShowUpload";
 	}
 	
